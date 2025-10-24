@@ -81,14 +81,27 @@ WSGI_APPLICATION = "marine_mapping.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Use PostGIS when env vars are provided, otherwise fallback to sqlite3 for local non-spatial dev
+# Env vars: DB_ENGINE=postgis|sqlite3, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+db_engine = os.getenv("DB_ENGINE", "sqlite3").lower()
+if db_engine == "postgis":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.contrib.gis.db.backends.postgis",
+            "NAME": os.getenv("DB_NAME", "marine_db"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
