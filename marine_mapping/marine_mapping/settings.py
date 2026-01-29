@@ -16,6 +16,20 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Fix for GeoDjango on Windows with wheels
+if os.name == 'nt':
+    import sys
+    VENV_BASE = BASE_DIR / 'venv'
+    OSGEO_DIR = VENV_BASE / 'Lib' / 'site-packages' / 'osgeo'
+    
+    if OSGEO_DIR.exists():
+        # Add to DLL search path (Python 3.8+)
+        os.add_dll_directory(str(OSGEO_DIR))
+        
+        # Configure GeoDjango settings
+        GDAL_LIBRARY_PATH = str(OSGEO_DIR / 'gdal.dll')
+        GEOS_LIBRARY_PATH = str(OSGEO_DIR / 'geos_c.dll')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

@@ -4,3 +4,6 @@ djangorestframework-gis==1.1
 django-cors-headers==4.4.0
 requests==2.32.3
 psycopg[binary]>=3.2.3
+
+# Note: GDAL must be installed separately on Windows (use a binary wheel or conda)
+# pip install GDAL will likely fail without a pre-built wheel.
